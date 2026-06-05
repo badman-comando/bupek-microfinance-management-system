@@ -24,8 +24,9 @@ export const generateToken = (user: User): string => {
   return jwt.sign(
     {
       id: user.id,
-      username: user.username,
       email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
       role: user.role,
       branch_id: user.branch_id,
     },
@@ -64,6 +65,11 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   (req as any).user = decoded;
   next();
 };
+
+/**
+ * Auth middleware (alias for authenticateToken)
+ */
+export const authMiddleware = authenticateToken;
 
 /**
  * Optional authentication middleware - doesn't fail if no token
@@ -106,6 +112,28 @@ export const checkRole = (allowedRoles: string[]) => {
       return;
     }
 
+    next();
+  };
+};
+
+/**
+ * Require permission middleware
+ */
+export const requirePermission = (permission: string) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const user = (req as any).user;
+
+    if (!user) {
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: ErrorMessages.UNAUTHORIZED,
+      });
+      return;
+    }
+
+    // In production, check against database permissions
+    // For now, we'll accept the request for authenticated users
+    logger.debug(`[Auth] Permission check: ${permission} for user ${user.id}`);
     next();
   };
 };

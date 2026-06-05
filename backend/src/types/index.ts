@@ -3,11 +3,12 @@
  */
 export interface User {
   id: number;
-  username: string;
+  username?: string;
   email: string;
   first_name: string;
   last_name: string;
   phone_number?: string;
+  phone?: string;
   role: string;
   branch_id: number;
   is_active: boolean;
@@ -28,7 +29,7 @@ export interface Borrower {
   date_of_birth?: Date;
   gender?: string;
   marital_status?: string;
-  employment_status: string;
+  employment_status?: string;
   business_type?: string;
   monthly_income: number;
   branch_id: number;
@@ -139,7 +140,8 @@ export interface Branch {
  */
 export interface Guarantor {
   id: number;
-  loan_id: number;
+  loan_id?: number;
+  borrower_id?: number;
   first_name: string;
   last_name: string;
   phone_number: string;
@@ -147,6 +149,29 @@ export interface Guarantor {
   relationship: string;
   created_at: Date;
   updated_at: Date;
+}
+
+/**
+ * API Response Types
+ */
+export interface IApiResponse<T> {
+  success: boolean;
+  message: string;
+  data?: T;
+  timestamp: Date;
+}
+
+export interface IPaginatedResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  timestamp: Date;
 }
 
 /**
